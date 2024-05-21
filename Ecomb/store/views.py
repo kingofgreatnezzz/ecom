@@ -12,8 +12,17 @@ from rest_framework.response import Response
 def getroutes(request):
     return Response('hello king of greatness',)
 
+#prouctlist 
 @api_view(["GET"])
 def getproducts(request):
     products = Products.objects.all()
     serialzer = ProductSerializers(products, many=True)
     return Response(serialzer.data)
+
+#productdetail
+@api_view(["GET"])
+def getproduct(request, pk):
+    products = Products.objects.get(id=pk)
+    serializer = ProductSerializers(products,many=False)
+    return Response(serializer.data)
+

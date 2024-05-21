@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Product from "../Product";
 
 function Homescreen() {
   const [products, setProducts] = useState([]);
@@ -19,13 +20,13 @@ function Homescreen() {
   return (
     <div className="px-3">
       <h1 className="font-bold text-3xl p-2 pb-6">My Products</h1>
-      <div className="grid grid-cols-3 gap-4 ">
+      <div className="grid">
         {products.map((product) => (
-          <div key={product.id} className="bg-green-700 p-4">
-          <img src=""/>
-            <p>{product.product_name}</p>
-            <p>{product.product_info}</p>
-            <p>{product.product_category}</p>
+          <div
+            key={product.id}
+            className="grid grid-cols-3 bg-green-600 gap-4 "
+          >
+            <Product product={product} />
           </div>
         ))}
       </div>
