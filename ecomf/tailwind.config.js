@@ -2,8 +2,7 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   devServer: {
-    allowedHosts: 'localhost', // or any other valid hostname or IP address
-    // other devServer options...
+    allowedHosts: ['localhost'], // Wrap 'localhost' in an array
   },
   theme: {
     extend: {},

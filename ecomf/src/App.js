@@ -1,6 +1,5 @@
 import './App.css';
 import Navbar from './components/Navbar';
-import Product from './components/Product';
 import Cartscreen from './components/screens/Cartscreen';
 import Homescreen from './components/screens/Homescreen';
 import Loginscreen from './components/screens/Loginscreen'
@@ -13,7 +12,9 @@ function App() {
 
     <div className="App">
     <Router>
+    {/* navbar */}
     <Navbar/>
+
     <Routes>
     <Route exact path='/' element={<Homescreen/>}></Route>
     <Route exact path='/login' element={<Loginscreen/>}></Route>

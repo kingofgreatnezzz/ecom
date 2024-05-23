@@ -1,34 +1,47 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { listProductDetails } from "../../redux/actions/productActions";
 
 function ProductScreen() {
   const { id } = useParams();
-  const [product, setProduct] = useState(null);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const productDetails = useSelector((state) => state.productDetails);
+  const { error, loading, product } = productDetails;
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const { data } = await axios.get(`/api/product/${id}`);
-        setProduct(data);
-      } catch (error) {
-        setError(error.response.statusText);
-      }
-    }
-    fetchData();
-  }, [id]);
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+    dispatch(listProductDetails(id));
+  }, [dispatch, id]);
 
   return (
-    <div>
-      {product ? (
-        <img src={product.product_img} alt="product details" />
+    <div className="flex flex-col">
+      {loading? (
+        <h2>Loading...</h2>
+      ) : error? (
+        <h3>{error}</h3>
       ) : (
-        <p>Loading...</p>
+        <div>
+          <img src={product.product_img} alt="product details" />
+          <p className="font-bold text-3xl leading-snug">
+            {product.product_name}
+          </p>
+          <p>{product.product_info}</p>
+          <p>{product.product_category}</p>
+          <p>{product.product_price}</p>
+          <div>
+            <strong>Status</strong>
+            <div>
+              {product.stock_count > 0? "In Stock" : "Out of Stock"}
+            </div>
+            <button
+              type="button"
+              className="bg-green-600 p-3 "
+              disabled={product.stock_count <= 0}
+            >
+              Add to Cart
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
