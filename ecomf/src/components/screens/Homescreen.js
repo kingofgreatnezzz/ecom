@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import { listProducts } from "../../redux/actions/productActions";
 import Product from "../Product";
 import { useDispatch, useSelector } from "react-redux";
+import Loader from "../Loader";
+import Message from "../Message";
 
 function Homescreen() {
   const dispatch = useDispatch();
@@ -17,9 +19,9 @@ function Homescreen() {
       <h1 className="font-bold text-3xl p-2 pb-6">My Products</h1>
       <div className="grid">
         {loading ? (
-          <h2>Loading.......</h2>
+          <Loader />
         ) : error ? (
-          <h2>{error}</h2>
+          <Message color={"red"}>{error}</Message>
         ) : (
           products.map((product) => (
             <div
