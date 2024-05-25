@@ -1,6 +1,10 @@
 from datetime import timedelta
 from pathlib import Path
-
+import django
+import django.utils
+from django.utils.encoding import force_str
+import django.utils.encoding
+django.utils.encoding.force_text = force_str
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -55,7 +59,7 @@ CORS_ALLOWED_ORIGINS = [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ["templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -128,6 +132,16 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = 'static/images/'
 MEDIA_URL = '/images/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
+# Email config
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 465
+EMAIL_USE_TLS = False
+EMAIL_HOST_USER = 'kingofgreatnezzz@gmail.com'
+EMAIL_HOST_PASSWORD = 'dztarzkiddvtlcxj'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+EMAIL_USE_SSL = True
 
 
 # Default primary key field type

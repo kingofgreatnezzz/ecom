@@ -26,19 +26,17 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 
-
 class UserSerializers(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email']  
-
 
 class UserSerializerWithToken(serializers.ModelSerializer):
     token = serializers.SerializerMethodField()
 
     class Meta:
         model = User 
-        fields = ['id', 'username', 'email', 'token','is_admin']
+        fields = ['id', 'username', 'email', 'token']
 
     def get_token(self, obj):
         token = RefreshToken.for_user(obj)
