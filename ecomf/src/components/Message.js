@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 const colorClasses = {
   red: "bg-red-500",
@@ -7,10 +7,21 @@ const colorClasses = {
 };
 
 function Message({ children, color }) {
+  const [visible, setVisible] = useState(true);
   const bgColorClass = colorClasses[color] || "bg-blue-500";
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setVisible(false);
+    }, 4000); // Hide message after 4 seconds
+
+    return () => clearTimeout(timer); // Cleanup the timer
+  }, []);
+
+  if (!visible) return null;
+
   return (
-    <div className={`relative block w-full p-4 mb-4 text-base leading-5 text-white rounded-lg opacity-100 font-regular ${bgColorClass}`}>
+    <div className={`relative block w-full p-3 mb-4 text-base leading-5 text-white rounded-lg opacity-100 font-regular ${bgColorClass}`}>
       {children}
     </div>
   );
