@@ -1,26 +1,35 @@
-import React, { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../Loader";
-import { validPassword } from "./Regexx";
 import Message from "../Message";
+import { login } from "../../redux/actions/userActions";
 
 function Loginscreen() {
   const navigate = useNavigate();
-  const [usernmae, setUsername] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+
+  const dispatch = useDispatch();
+  const userLogin = useSelector((state) => state.userLogin);
+  const { error, loading, userInfo } = userLogin;
+
+  const location = useLocation();
+  const redirect = location.search ? location.search.split("=")[1] : "/";
+
+  useEffect(() => {
+    if (userInfo) {
+      navigate("/");
+    }
+  }, [userInfo, redirect, navigate]);
 
   const submitHandler = (e) => {
     e.preventDefault();
-
-    // Clear previous error message
-    setError("");
-
-    console.log(usernmae, password);
-
-    setError("Successfully Signed Up");
+    dispatch(login(username, password));
+    console.log(username, password);
   };
+
   return (
     <>
       <div className="w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
@@ -34,7 +43,7 @@ function Loginscreen() {
           </p>
 
           <div className="pt-4">
-            {error && <Message color={"red"}>{error}</Message>}
+            {message && <Message color={"red"}>{message}</Message>}
           </div>
 
           <form onSubmit={submitHandler}>
@@ -42,7 +51,7 @@ function Loginscreen() {
               <input
                 className="block w-full px-4 py-2 mt-2 text-gray-300 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
                 type="text"
-                value={usernmae}
+                value={username}
                 placeholder="Username"
                 aria-label="Username"
                 onChange={(e) => setUsername(e.target.value)}
@@ -63,10 +72,7 @@ function Loginscreen() {
             </div>
 
             <div className="flex items-center justify-between mt-4">
-              <button
-                onClick={submitHandler}
-                className="w-full py-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50"
-              >
+              <button className="w-full py-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50">
                 Login
               </button>
             </div>

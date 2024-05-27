@@ -1,35 +1,46 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../Loader";
 import { validPassword } from "./Regexx";
 import Message from "../Message";
+import { signup } from "../../redux/actions/userActions";
 
 function Signupscreen() {
   const navigate = useNavigate();
-  const [usernmae, setUsername] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password1, setPassword1] = useState("");
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const location = useLocation()
+  const dispatch = useDispatch()
+  const redirect = location.search?location.search.split("=")[1] : "/"
+  const userSignup =  useSelector((state) =>state.userSignup)
+  const {error, loading, userinfo} = userSignup
 
+  useEffect(() =>{
+    if (userinfo){
+      navigate("/")
+    }
+  },[userinfo, redirect ])
 
 
   const submitHandler = (e) => {
     e.preventDefault();
 
-    // Clear previous error message
-    setError("");
-
-    console.log(usernmae, email, password, password1);
+    console.log(username, email, password, password1);
 
     if (password !== password1) {
-      setError("Passwords do not match");
+      setMessage("Passwords do not match");
       navigate("/signup");
     } else if (!validPassword.test(password)) {
-      setError("Password must be at least 6 characters long");
+      setMessage("Password must be at least 6 characters long");
     } else {
-      setError('Successfully Signed Up');
+
+      dispatch(signup(username, email, password ))
+      setMessage("Successfully Signed Up")
+      navigate("/login")
     }
   };
 
@@ -47,7 +58,7 @@ function Signupscreen() {
           </p>
 
           <div className="pt-4">
-            {error && <Message color={"red"}>{error}</Message>}
+            {message && <Message color={"red"}>{message}</Message>}
           </div>
 
           <form onSubmit={submitHandler}>
@@ -55,7 +66,7 @@ function Signupscreen() {
               <input
                 className="block w-full px-4 py-2 mt-2 text-gray-300 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
                 type="text"
-                value={usernmae}
+                value={username}
                 placeholder="Username"
                 aria-label="Username"
                 onChange={(e) => setUsername(e.target.value)}
@@ -103,7 +114,6 @@ function Signupscreen() {
 
             <div className="flex items-center justify-between mt-4">
               <button
-              onClick={submitHandler} 
               className="w-full py-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50">
                 Sign Up
               </button>

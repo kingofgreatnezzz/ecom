@@ -37,9 +37,14 @@ def register(request):
         user = User.objects.create(
             username=data['username'],
             email=data['email'],
+            password=make_password(data['password']),is_active=True)
+
+        """
+          user = User.objects.create(
+            username=data['username'],
+            email=data['email'],
             password=make_password(data['password']), is_active=False
         )
-
         #generate token to send mail
         email_subjects = "Activate your email"
         message = render_to_string(
@@ -56,14 +61,12 @@ def register(request):
         # send to  email 
         email_message = EmailMessage(email_subjects, message, settings.EMAIL_HOST_USER, [data['email']])
         email_message.send()
-
+"""
         serializer = UserSerializerWithToken(user, many=False)
         return Response(serializer.data)
     
     except Exception as e:
         return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 
 
@@ -88,10 +91,6 @@ class ActivateView(APIView):
         else:
             return render(request, "activate_fail.html", {})
             
-
-
-
-
 
 
 
