@@ -1,9 +1,19 @@
 import React from "react";
 import { BsCart3 } from "react-icons/bs";
 import { Link } from "react-router-dom";
-import Logoutscreen from "./screens/Logoutscreen"
+import Logoutscreen from "./screens/Logoutscreen";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../redux/actions/userActions";
 
 function Navbar() {
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
+  const dispatch = useDispatch();
+
+  const logoutHandler = () => {
+    dispatch(logout());
+  };
+
   return (
     <nav className="flex justify-between mx-auto px-4 py-3 bg-gray-600">
       <div>
@@ -19,23 +29,37 @@ function Navbar() {
         <li>
           <Link to={"/about"}>about</Link>
         </li>
-        <li>
-          <Link to={"/categories"}>categories</Link>
-        </li>
       </ul>
       <div>
-        <div className=" flex items-center space-x-3">
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            <Link to={"/login"}>Login</Link>
-          </button>
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            <Link to={"/signup"}>signup</Link>
-          </button>
-          <Link to={'/cart'}>
-          
-          <BsCart3 className="h-6 w-6" />
+        <div className="flex items-center space-x-3">
+          {userInfo ? (
+            <div>
+              <p className="font-bold">Hi {userInfo.user.username}</p>
+            </div>
+          ) : (
+            <div className="space-x-3">
+              <Link
+                to={"/login"}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Login
+              </Link>
+
+              <Link
+                to={"/signup"}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
+                signup
+              </Link>
+            </div>
+          )}
+          <div onClick={logoutHandler}>
+            <Logoutscreen />
+          </div>
+
+          <Link to={"/cart"}>
+            <BsCart3 className="h-6 w-6" />
           </Link>
-          <Logoutscreen/>
         </div>
       </div>
     </nav>

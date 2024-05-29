@@ -19,3 +19,39 @@ def login(request):
         })
     else:
         return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['POST'])
+def register(request):
+    data = request.data
+    try:
+        user = User.objects.create(
+            username=data['username'],
+            email=data['email'],
+            password=make_password(data['password']), is_active=False
+        )
+        #generate token to send mail
+        email_subjects = "Activate Your Account"
+        message = render_to_string(
+            "activate.html",{
+                
+            'user': user,
+            'domain': '127.0.0.1:8000',
+            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            'token': account_activation_token.make_token(user),
+            }
+        )
+
+        # send to  email 
+        email_message = EmailMessage(email_subjects, message, settings.EMAIL_HOST_USER, [data['email']])
+        email_message.send()
+        message ={"details": "Successflly Signed Up Activate your Account by clicking the link sent to your E-mail"}
+        return Response(message)
+    
+    except Exception as e:
+        message ={"details": "Username with this email already exists or somthing went wrong"}
+        print(f"Error during user registration: {str(e)}")
+        return Response(message)
+       
+
+    

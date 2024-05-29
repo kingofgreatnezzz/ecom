@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../Loader";
-import { validPassword } from "./Regexx";
 import Message from "../Message";
 import { signup } from "../../redux/actions/userActions";
+import { validPassword } from "./Regexx";
 
 function Signupscreen() {
   const navigate = useNavigate();
@@ -13,37 +13,39 @@ function Signupscreen() {
   const [password, setPassword] = useState("");
   const [password1, setPassword1] = useState("");
   const [message, setMessage] = useState("");
-  const location = useLocation()
-  const dispatch = useDispatch()
-  const redirect = location.search?location.search.split("=")[1] : "/"
-  const userSignup =  useSelector((state) =>state.userSignup)
-  const {error, loading, userinfo} = userSignup
 
-  useEffect(() =>{
-    if (userinfo){
-      navigate("/")
+  const dispatch = useDispatch();
+  const userSignup = useSelector((state) => state.userSignup);
+  const { loading, error, userInfo } = userSignup;
+
+  // Redirect
+  const location = useLocation();
+  const redirect = location.search ? location.search.split("=")[1] : "/";
+
+  useEffect(() => {
+    if (userInfo) {
+      setMessage(userInfo.details);
+      setUsername("");
+      setEmail("");
+      setPassword("");
+      setPassword1("");
     }
-  },[userinfo, redirect ])
-
+    if (error) {
+      setMessage(error);
+    }
+  }, [userInfo, error, redirect, navigate]);
 
   const submitHandler = (e) => {
     e.preventDefault();
-
-    console.log(username, email, password, password1);
-
+    
     if (password !== password1) {
       setMessage("Passwords do not match");
-      navigate("/signup");
     } else if (!validPassword.test(password)) {
-      setMessage("Password must be at least 6 characters long");
+      setMessage("Password must meet the criteria");
     } else {
-
-      dispatch(signup(username, email, password ))
-      setMessage("Successfully Signed Up")
-      navigate("/login")
+      dispatch(signup(username, email, password));
     }
   };
-
 
   return (
     <>
@@ -58,8 +60,9 @@ function Signupscreen() {
           </p>
 
           <div className="pt-4">
-            {message && <Message color={"red"}>{message}</Message>}
-          </div>
+          {message && <Message color={"red"}>{message}</Message>}
+          {loading && <Loader />}
+        </div>
 
           <form onSubmit={submitHandler}>
             <div className="w-full mt-4">
@@ -96,8 +99,7 @@ function Signupscreen() {
                 required
               />
               <p className="text-gray-600 text-left">
-                password must include atleasr [1-9][a-z][A-Z][@./$%^&] & %
-                characters
+                Password must include at least one number, one letter, and one special character.
               </p>
             </div>
             <div className="w-full mt-4">
@@ -113,8 +115,7 @@ function Signupscreen() {
             </div>
 
             <div className="flex items-center justify-between mt-4">
-              <button
-              className="w-full py-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50">
+              <button className="w-full py-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50">
                 Sign Up
               </button>
             </div>

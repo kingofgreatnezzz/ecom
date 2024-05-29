@@ -6,6 +6,7 @@ import {
   USER_SIGNUP_FAIL,
   USER_SIGNUP_REQUEST,
   USER_SIGNUP_SUCCESS,
+  USER_LOGOUT,
 } from "../constants/userContant";
 
 export const signup = (username, email, password) => async (dispatch) => {
@@ -35,7 +36,11 @@ export const signup = (username, email, password) => async (dispatch) => {
       payload: data,
     });
 
-    localStorage.setItem("userInfo", JSON.stringify(data));
+    // localStorage.setItem("userInfo", JSON.stringify(data));
+    // localStorage.setItem(
+    //   "Activate Mgs",
+    //   "Activate ur account by clicking on the link in your E-mail"
+    // );
   } catch (error) {
     dispatch({
       type: USER_SIGNUP_FAIL,
@@ -83,4 +88,11 @@ export const login = (username, password) => async (dispatch) => {
           : error.message,
     });
   }
+};
+
+export const logout = () => (dispatch) => {
+  localStorage.removeItem("userInfo");
+  dispatch({
+    type: USER_LOGOUT,
+  });
 };

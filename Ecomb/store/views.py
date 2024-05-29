@@ -28,45 +28,57 @@ from django.urls import reverse
 from .utils import account_activation_token
 from rest_framework.decorators import api_view
 from django.contrib.auth.hashers import make_password
+import threading
+
+
+class EmailThread(threading.Thread):
+    def __init__(self, email_message):
+        self.email_message = email_message
+        super().__init__()
+
+    def run(self):
+        self.email_message.send()
 
 
 @api_view(['POST'])
 def register(request):
     data = request.data
     try:
+        # Create the user
         user = User.objects.create(
             username=data['username'],
             email=data['email'],
-            password=make_password(data['password']),is_active=True)
-
-        """
-          user = User.objects.create(
-            username=data['username'],
-            email=data['email'],
-            password=make_password(data['password']), is_active=False
+            password=make_password(data['password']),
+            is_active=False  # Set to False if you want email activation
         )
-        #generate token to send mail
-        email_subjects = "Activate your email"
+
+        # Generate token to send mail
+        email_subject = "Activate Your Account"
         message = render_to_string(
-            "activate.html",{
-                
-            'user': user,
-            'domain': '127.0.0.1:8000',
-            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-            'token': account_activation_token.make_token(user),
+            "activate.html",
+            {
+                'user': user,
+                'domain': '127.0.0.1:8000',
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),
             }
         )
-        #print(message)
 
-        # send to  email 
-        email_message = EmailMessage(email_subjects, message, settings.EMAIL_HOST_USER, [data['email']])
-        email_message.send()
-"""
-        serializer = UserSerializerWithToken(user, many=False)
-        return Response(serializer.data)
+        # Send email
+        email_message = EmailMessage(email_subject, message, settings.EMAIL_HOST_USER, [data['email']])
+        #Email thread for sending email.
+        EmailThread(email_message).start()
+
+        response = {"details": "Successfully Signed Up. Activate your account by clicking the link sent to your email."}
+        return Response(response)
     
     except Exception as e:
-        return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        # Print the error to the terminal for debugging
+        print(f"Error during user registration: {str(e)}")
+
+        response = {"details": "Username with this email already exists or something went wrong."}
+        #return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        return Response(response)
 
 
 
@@ -100,7 +112,6 @@ def getUsers(request):
     user = User.objects.all()
     serializer = UserSerializers(user, many=True)
     return Response(serializer.data)
-
 
 
 class GetUserProfile(APIView):
