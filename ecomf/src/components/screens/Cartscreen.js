@@ -28,7 +28,7 @@ function Cartscreen() {
   };
 
   const checkoutHandler = () => {
-    navigate("/login?redirect=shipping");
+    navigate("/shipping");
   };
 
   return (
@@ -56,7 +56,7 @@ function Cartscreen() {
                   >
                     {
                       // Ensure item.countInStock is defined and non-negative
-                      [...Array(item.countInStock ? Math.min(item.countInStock) : qty).keys()].map((x) => (
+                      [...Array(item.stock_count ? Math.min(item.stock_count) : qty).keys()].map((x) => (
                         <option key={x + 1} value={x + 1}>
                           {x + 1}
                         </option>

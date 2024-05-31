@@ -1,57 +1,103 @@
-from django.contrib.auth import authenticate
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from rest_framework_simplejwt.tokens import RefreshToken
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { addToCart, removeFromCart } from '../../redux/actions/cartActions';
 
-@api_view(['POST'])
-def login(request):
-    data = request.data
-    username = data.get('username')
-    password = data.get('password')
+const Cartscreen = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  
+  const cart = useSelector((state) => state.cart);
+  const { cartItems } = cart;
 
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        refresh = RefreshToken.for_user(user)
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        })
-    else:
-        return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+  const removeFromCartHandler = (id) => {
+    dispatch(removeFromCart(id));
+  };
+
+  const checkoutHandler = () => {
+    navigate('/shipping');
+  };
+
+  return (
+    <div>
+      <h1>Shopping Cart</h1>
+      {cartItems.length === 0 ? (
+        <div>
+          Your cart is empty <Link to="/">Go Back</Link>
+        </div>
+      ) : (
+        <div>
+          {cartItems.map((item) => (
+            <div key={item.product}>
+              <Link to={`/product/${item.product}`}>{item.name}</Link>
+              <span>{item.price}</span>
+              <button onClick={() => removeFromCartHandler(item.product)}>Remove</button>
+            </div>
+          ))}
+          <button onClick={checkoutHandler}>Proceed to Checkout</button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Cartscreen;
 
 
-@api_view(['POST'])
-def register(request):
-    data = request.data
-    try:
-        user = User.objects.create(
-            username=data['username'],
-            email=data['email'],
-            password=make_password(data['password']), is_active=False
-        )
-        #generate token to send mail
-        email_subjects = "Activate Your Account"
-        message = render_to_string(
-            "activate.html",{
-                
-            'user': user,
-            'domain': '127.0.0.1:8000',
-            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-            'token': account_activation_token.make_token(user),
-            }
-        )
 
-        # send to  email 
-        email_message = EmailMessage(email_subjects, message, settings.EMAIL_HOST_USER, [data['email']])
-        email_message.send()
-        message ={"details": "Successflly Signed Up Activate your Account by clicking the link sent to your E-mail"}
-        return Response(message)
-    
-    except Exception as e:
-        message ={"details": "Username with this email already exists or somthing went wrong"}
-        print(f"Error during user registration: {str(e)}")
-        return Response(message)
-       
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { listProductDetails } from '../../redux/actions/productActions';
+import { addToCart } from '../../redux/actions/cartActions';
+import Loader from '../Loader';
+import Message from '../Message';
 
-    
+const ProductScreen = () => {
+  const [qty, setQty] = useState(1);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  const productDetails = useSelector((state) => state.productDetails);
+  const { loading, error, product } = productDetails;
+
+  useEffect(() => {
+    dispatch(listProductDetails(id));
+  }, [dispatch, id]);
+
+  const addToCartHandler = () => {
+    dispatch(addToCart(product._id, qty));
+    navigate('/cart');
+  };
+
+  return (
+    <>
+      <Link to="/">Go Back</Link>
+      {loading ? (
+        <Loader />
+      ) : error ? (
+        <Message variant="danger">{error}</Message>
+      ) : (
+        <div>
+          <h3>{product.name}</h3>
+          <p>{product.description}</p>
+          <p>${product.price}</p>
+          <div>
+            <select value={qty} onChange={(e) => setQty(e.target.value)}>
+              {[...Array(product.countInStock).keys()].map((x) => (
+                <option key={x + 1} value={x + 1}>
+                  {x + 1}
+                </option>
+              ))}
+            </select>
+            <button onClick={addToCartHandler}>Add to Cart</button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default ProductScreen;

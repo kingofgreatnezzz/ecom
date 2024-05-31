@@ -27,10 +27,64 @@ from rest_framework.permissions import AllowAny
 from django.urls import reverse
 from .utils import account_activation_token
 from rest_framework.decorators import api_view
+from .models import *
 from django.contrib.auth.hashers import make_password
 import threading
 
+from .serializers import OrderSerializer
+import string
+import random
 
+def generate_unique_order_id():
+    characters = string.ascii_uppercase + string.digits
+    while True:
+        order_id = ''.join(random.choices(characters, k=6))
+        if not Order.objects.filter(order_id=order_id).exists():
+            break
+    return order_id
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def addOrderItems(request):
+    user = request.user
+    data = request.data
+
+    orderItems = data['orderItems']
+
+    if orderItems and len(orderItems) == 0:
+        return Response({'detail': 'No Order Items'}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        order_id = generate_unique_order_id()
+
+        order = Order.objects.create(
+            user=user,
+            payment_method=data['paymentMethod'],
+            tax_price=data['taxPrice'],
+            shipping_price=data['shippingPrice'],
+            total_price=data['totalPrice'],
+            order_id=order_id
+        )
+
+        shipping = ShippingAddress.objects.create(
+            order=order,
+            address=data['shippingAddress']['address'],
+            city=data['shippingAddress']['city'],
+            postal_code=data['shippingAddress']['postalCode'],
+            country=data['shippingAddress']['country']
+        )
+
+        for i in orderItems:
+            OrderItem.objects.create(
+                product_id=i['product'],
+                order=order,
+                name=i['name'],
+                qty=i['qty'],
+                price=i['price'],
+                image=i['image']
+            )
+
+        serializer = OrderSerializer(order, many=False)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 class EmailThread(threading.Thread):
     def __init__(self, email_message):
         self.email_message = email_message
@@ -82,10 +136,6 @@ def register(request):
 
 
 
-
-
-
-
 class ActivateView(APIView):
     permission_classes = [AllowAny]
 
@@ -102,9 +152,7 @@ class ActivateView(APIView):
             return render(request, "activate_succes.html", {})
         else:
             return render(request, "activate_fail.html", {})
-            
-
-
+           
 
 @api_view(["GET"])
 @permission_classes([IsAdminUser])

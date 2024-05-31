@@ -13,22 +13,23 @@ function Loginscreen() {
 
   const dispatch = useDispatch();
   const userLogin = useSelector((state) => state.userLogin);
-  const { loading, userInfo } = userLogin;
+  const { loading, userInfo, error } = userLogin;
 
   const location = useLocation();
   const redirect = location.search ? location.search.split("=")[1] : "/";
 
   useEffect(() => {
     if (userInfo) {
-      navigate("/");
+      navigate(redirect);
     }
-  }, [userInfo, redirect, navigate]);
+    if (error) {
+      setMessage(error);
+    }
+  }, [userInfo, error, redirect, navigate]);
 
   const submitHandler = (e) => {
     e.preventDefault();
     dispatch(login(username, password));
-    navigate("/");
-    console.log(username, password);
   };
 
   return (

@@ -1,28 +1,38 @@
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Cartscreen from './components/screens/Cartscreen';
 import Homescreen from './components/screens/Homescreen';
-import Loginscreen from './components/screens/Loginscreen'
+import Loginscreen from './components/screens/Loginscreen';
 import ProductScreen from './components/screens/ProductScreen';
-import Signupscreen from './components/screens/Signupscreen'
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Signupscreen from './components/screens/Signupscreen';
+import Cartscreen from './components/screens/Cartscreen';
+import ShippingScreen from './components/screens/ShippingScreen';
+import PaymentScreen from './components/screens/PaymentScreen';
+import PrivateRoute from './utils/PrivateRoute';
+import PlaceOrderScreen from './components/screens/PlaceorderScreen';
+import OrderConfirmationScreen from './components/screens/OrderConfirmationScreen';
+
 
 function App() {
   return (
-
     <div className="App">
-    <Router>
-    {/* navbar */}
-    <Navbar/>
+      <Router>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Homescreen />} />
+          <Route path="/login" element={<Loginscreen />} />
+          <Route path="/product/:id" element={<ProductScreen />} />
+          <Route path="/signup" element={<Signupscreen />} />
+          <Route path="/cart/:id?" element={<Cartscreen />} />
 
-    <Routes>
-    <Route exact path='/' element={<Homescreen/>}></Route>
-    <Route exact path='/login' element={<Loginscreen/>}></Route>
-    <Route exact path='/product/:id' element={<ProductScreen/>}></Route>    
-    <Route exact path='/signup' element={<Signupscreen/>}></Route>
-    <Route exact path='/cart/:id?' element={<Cartscreen/>}></Route>
-    </Routes>
-    </Router>
+          <Route element={<PrivateRoute />}>
+            <Route path="/shipping" element={<ShippingScreen />} />
+            <Route path="/payment" element={<PaymentScreen />} />
+            <Route path="/placeorder" element={<PlaceOrderScreen/>} />
+            <Route path="/order-confirmation" element={<OrderConfirmationScreen />} />
+          </Route>
+        </Routes>
+      </Router>
     </div>
   );
 }
