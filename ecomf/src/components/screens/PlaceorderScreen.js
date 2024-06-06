@@ -19,7 +19,7 @@ const PlaceOrderScreen = () => {
       navigate('/order-confirmation', { state: { order } });
     }
   }, [success, navigate, order]);
-
+ 
   const placeOrderHandler = () => {
     dispatch(createOrder({
       orderItems: cartItems,

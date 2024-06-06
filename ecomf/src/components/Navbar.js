@@ -8,6 +8,8 @@ import { logout } from "../redux/actions/userActions";
 function Navbar() {
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
+  const cart = useSelector((state) => state.cart);
+  const { cartItems } = cart;
   const dispatch = useDispatch();
 
   const logoutHandler = () => {
@@ -27,7 +29,7 @@ function Navbar() {
           <Link to={"/shop"}>Shop</Link>
         </li>
         <li>
-          <Link to={"/about"}>about</Link>
+          <Link to={"/about"}>About</Link>
         </li>
       </ul>
       <div>
@@ -44,21 +46,24 @@ function Navbar() {
               >
                 Login
               </Link>
-
               <Link
                 to={"/signup"}
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
               >
-                signup
+                Signup
               </Link>
             </div>
           )}
           <div onClick={logoutHandler}>
             <Logoutscreen />
           </div>
-
-          <Link to={"/cart"}>
+          <Link to={"/cart"} className="relative">
             <BsCart3 className="h-6 w-6" />
+            {cartItems.length > 0 && (
+              <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+                {cartItems.length}
+              </span>
+            )}
           </Link>
         </div>
       </div>

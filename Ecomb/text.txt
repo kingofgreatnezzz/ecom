@@ -101,3 +101,38 @@ const ProductScreen = () => {
 };
 
 export default ProductScreen;
+
+
+
+
+   increaseQuantity: (state, action) => {
+      const item = state.products.find(
+        (item) => item._id === action.payload._id
+      );
+      if (item) {
+        item.quantity++;
+        // Dispatch a success toast
+      }
+    },
+    drecreaseQuantity: (state, action) => {
+      const item = state.products.find(
+        (item) => item._id === action.payload._id
+      );
+      if (item.quantity === 1) {
+        item.quantity = 1;
+      } else {
+        item.quantity--;
+        // Dispatch a success toast
+      }
+    },
+    deleteItem: (state, action) => {
+      state.products = state.products.filter(
+        (item) => item._id !== action.payload
+      );
+      // Dispatch a success toast
+      toast.error("Product removed from cart");
+    },
+    resetCart: (state) => {
+      state.products = [];
+      // Dispatch a success toast
+    },

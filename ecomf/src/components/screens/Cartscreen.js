@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart, removeFromCart } from '../../redux/actions/cartActions';
+import { addToCart, removeFromCart, resetCart } from '../../redux/actions/cartActions';
 import Message from '../Message';
 
 function Cartscreen() {
@@ -20,7 +20,6 @@ function Cartscreen() {
     if (productId) {
       dispatch(addToCart(productId, qty));
     }
-    console.log(qty)
   }, [dispatch, productId, qty]);
 
   const removeFromCartHandler = (id) => {
@@ -29,6 +28,10 @@ function Cartscreen() {
 
   const checkoutHandler = () => {
     navigate("/shipping");
+  };
+
+  const resetCartHandler = () => {
+    dispatch(resetCart());
   };
 
   return (
@@ -55,8 +58,7 @@ function Cartscreen() {
                     className="mr-4 border border-gray-300 rounded-lg px-2 py-1"
                   >
                     {
-                      // Ensure item.countInStock is defined and non-negative
-                      [...Array(item.stock_count ? Math.min(item.stock_count) : qty).keys()].map((x) => (
+                      [...Array(item.countInstock).keys()].map((x) => (
                         <option key={x + 1} value={x + 1}>
                           {x + 1}
                         </option>
@@ -75,6 +77,12 @@ function Cartscreen() {
           ))}
         </div>
       )}
+      <button
+        onClick={resetCartHandler}
+        className="py-2 px-10 bg-red-500 text-white font-semibold uppercase mb-4 hover:bg-red-700 duration-300"
+      >
+        Reset cart
+      </button>
       {cartItems.length > 0 && (
         <div className="mt-6 flex justify-end">
           <button
