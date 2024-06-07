@@ -1,12 +1,13 @@
+import axios from "axios";
 import {
   CART_ADD_ITEM,
   CART_REMOVE_ITEM,
   CART_SAVE_SHIPPING_ADDRESS,
   CART_SAVE_PAYMENT_METHOD,
   CART_RESET,
+  CART_INCREASE_QUANTITY,
+  CART_DECREASE_QUANTITY,
 } from "../constants/cartConstants";
-
-import axios from "axios";
 
 // Action to add item to cart
 export const addToCart = (id, qty) => async (dispatch, getState) => {
@@ -29,6 +30,24 @@ export const addToCart = (id, qty) => async (dispatch, getState) => {
 export const removeFromCart = (productId) => (dispatch, getState) => {
   dispatch({
     type: CART_REMOVE_ITEM,
+    payload: productId,
+  });
+  localStorage.setItem("cartItems", JSON.stringify(getState().cart.cartItems));
+};
+
+// Action to increase item quantity
+export const increaseQuantity = (productId) => (dispatch, getState) => {
+  dispatch({
+    type: CART_INCREASE_QUANTITY,
+    payload: productId,
+  });
+  localStorage.setItem("cartItems", JSON.stringify(getState().cart.cartItems));
+};
+
+// Action to decrease item quantity
+export const decreaseQuantity = (productId) => (dispatch, getState) => {
+  dispatch({
+    type: CART_DECREASE_QUANTITY,
     payload: productId,
   });
   localStorage.setItem("cartItems", JSON.stringify(getState().cart.cartItems));
