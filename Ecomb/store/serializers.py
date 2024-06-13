@@ -14,6 +14,12 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
+
+
+
+
+
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
@@ -62,10 +68,10 @@ class OrderItemSerializer(serializers.ModelSerializer):
         model = OrderItem
         fields = '__all__'
 
-
-
 class OrderSerializer(serializers.ModelSerializer):
+    orderItems = OrderItemSerializer(many=True, read_only=True, source='orderitem_set')
+    shippingAddress = ShippingAddressSerializer(read_only=True, source='shippingaddress')
+
     class Meta:
         model = Order
         fields = '__all__'
-        read_only_fields = ['order_id']

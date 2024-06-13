@@ -58,7 +58,7 @@ function Cartscreen() {
   };
 
   const checkoutHandler = () => {
-    navigate("/shipping");
+    navigate("/shipping", { state: { totalAmount: subtotal + shippingCharge } });
   };
 
   const resetCartHandler = () => {
@@ -185,20 +185,15 @@ function Cartscreen() {
                       ${subtotal + shippingCharge}
                     </span>
                   </p>
-                  <Link to="/paymentgateway">
-                    <button className="bg-primeColor text-white hover:bg-black duration-300">
-                      Proceed to Checkout
-                    </button>
-                  </Link>
+                  <button
+                    onClick={checkoutHandler}
+                    className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+                  >
+                    Proceed to Checkout
+                  </button>
                 </div>
               </div>
             </div>
-            <button
-              onClick={checkoutHandler}
-              className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
-            >
-              Proceed to Checkout
-            </button>
           </div>
         </div>
       )}

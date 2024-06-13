@@ -1,138 +1,171 @@
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
-import { addToCart, removeFromCart } from '../../redux/actions/cartActions';
 
-const Cartscreen = () => {
-  const dispatch = useDispatch();
+
+
+
+
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import PaystackPop from '@paystack/inline-js';
+import { createOrder } from '.'
+
+
+
+const PaymentScreen = () => {
+  const publicKey = "pk_test_1bf94b73a334154859e1d426fba4b566245ef5bb";
+  const location = useLocation();
   const navigate = useNavigate();
-  
-  const cart = useSelector((state) => state.cart);
-  const { cartItems } = cart;
+  const dispatch = useDispatch();
+  const totalAmount = location.state ? location.state.totalAmount : null;
+  const [email, setEmail] = useState("");
+  const [amount, setAmount] = useState(totalAmount || 0);
 
-  const removeFromCartHandler = (id) => {
-    dispatch(removeFromCart(id));
-  };
+  const payWithPaystack = (e) => {
+    e.preventDefault();
 
-  const checkoutHandler = () => {
-    navigate('/shipping');
+    let handler = PaystackPop.setup({
+      key: publicKey,
+      email: email,
+      amount: amount * 100,
+      ref: '' + Math.floor((Math.random() * 1000000000) + 1),
+      onClose: function() {
+        alert('Window closed.');
+      },
+      callback: function(response) {
+        let message = 'Payment complete! Reference: ' + response.reference;
+        alert(message);
+
+        // Fetching the shipping address from local storage
+        const shippingAddress = JSON.parse(localStorage.getItem('shippingAddress')) || {};
+
+        // Fetching the cart items from local storage
+        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+        const order = {
+          order_id: response.reference,
+          totalAmount: amount,
+          shippingAddress: shippingAddress,
+          orderItems: cartItems,
+        };
+
+        // Dispatching the createOrder action
+        dispatch(createOrder(order));
+
+        // Navigating to the order confirmation page
+        navigate('/order-confirmation', { state: { order } });
+      }
+    });
+
+    handler.openIframe();
   };
 
   return (
     <div>
-      <h1>Shopping Cart</h1>
-      {cartItems.length === 0 ? (
+      <h2>Paystack Payment</h2>
+      <form id="paymentForm" onSubmit={payWithPaystack}>
         <div>
-          Your cart is empty <Link to="/">Go Back</Link>
+          <label htmlFor="email-address">Email Address</label>
+          <input
+            type="email"
+            id="email-address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
-      ) : (
         <div>
-          {cartItems.map((item) => (
-            <div key={item.product}>
-              <Link to={`/product/${item.product}`}>{item.name}</Link>
-              <span>{item.price}</span>
-              <button onClick={() => removeFromCartHandler(item.product)}>Remove</button>
-            </div>
-          ))}
-          <button onClick={checkoutHandler}>Proceed to Checkout</button>
+          <label htmlFor="amount">Amount</label>
+          <input
+            type="number"
+            id="amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            required
+            readOnly
+          />
         </div>
-      )}
+        <button type="submit" className="bg-blue-600 p-4 rounded-md text-gray-300">
+          Pay with Paystack
+        </button>
+      </form>
     </div>
   );
 };
 
-export default Cartscreen;
+export default PaymentScreen;
 
 
 
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useParams, useNavigate } from 'react-router-dom';
-import { listProductDetails } from '../../redux/actions/productActions';
-import { addToCart } from '../../redux/actions/cartActions';
-import Loader from '../Loader';
-import Message from '../Message';
 
-const ProductScreen = () => {
-  const [qty, setQty] = useState(1);
 
-  const dispatch = useDispatch();
+
+
+
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import PaystackPop from '@paystack/inline-js';
+
+const PaymentScreen = () => {
+  const publicKey = "pk_test_1bf94b73a334154859e1d426fba4b566245ef5bb";
+  const location = useLocation();
   const navigate = useNavigate();
-  const { id } = useParams();
+  const totalAmount = location.state ? location.state.totalAmount : null;
+  const [email, setEmail] = useState("");
+  const [amount, setAmount] = useState(totalAmount || 0);
 
-  const productDetails = useSelector((state) => state.productDetails);
-  const { loading, error, product } = productDetails;
+  const payWithPaystack = (e) => {
+    e.preventDefault();
 
-  useEffect(() => {
-    dispatch(listProductDetails(id));
-  }, [dispatch, id]);
+    let handler = PaystackPop.setup({
+      key: publicKey,
+      email: email,
+      amount: amount * 100,
+      ref: '' + Math.floor((Math.random() * 1000000000) + 1),
+      onClose: function() {
+        alert('Window closed.');
+      },
+      callback: function(response) {
+        let message = 'Payment complete! Reference: ' + response.reference;
+        alert(message);
+        const order = { order_id: response.reference, totalAmount: amount };
+        navigate('/order-confirmation', { state: { order } });
+      }
+    });
 
-  const addToCartHandler = () => {
-    dispatch(addToCart(product._id, qty));
-    navigate('/cart');
+    handler.openIframe();
   };
 
   return (
-    <>
-      <Link to="/">Go Back</Link>
-      {loading ? (
-        <Loader />
-      ) : error ? (
-        <Message variant="danger">{error}</Message>
-      ) : (
+    <div>
+      <h2>Paystack Payment</h2>
+      <form id="paymentForm" onSubmit={payWithPaystack}>
         <div>
-          <h3>{product.name}</h3>
-          <p>{product.description}</p>
-          <p>${product.price}</p>
-          <div>
-            <select value={qty} onChange={(e) => setQty(e.target.value)}>
-              {[...Array(product.countInStock).keys()].map((x) => (
-                <option key={x + 1} value={x + 1}>
-                  {x + 1}
-                </option>
-              ))}
-            </select>
-            <button onClick={addToCartHandler}>Add to Cart</button>
-          </div>
+          <label htmlFor="email-address">Email Address</label>
+          <input
+            type="email"
+            id="email-address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
-      )}
-    </>
+        <div>
+          <label htmlFor="amount">Amount</label>
+          <input
+            type="number"
+            id="amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            required
+            readOnly
+          />
+        </div>
+        <button type="submit" className="bg-blue-600 p-4 rounded-md text-gray-300">
+          Pay with Paystack
+        </button>
+      </form>
+    </div>
   );
 };
 
-export default ProductScreen;
-
-
-
-
-   increaseQuantity: (state, action) => {
-      const item = state.products.find(
-        (item) => item._id === action.payload._id
-      );
-      if (item) {
-        item.quantity++;
-        // Dispatch a success toast
-      }
-    },
-    drecreaseQuantity: (state, action) => {
-      const item = state.products.find(
-        (item) => item._id === action.payload._id
-      );
-      if (item.quantity === 1) {
-        item.quantity = 1;
-      } else {
-        item.quantity--;
-        // Dispatch a success toast
-      }
-    },
-    deleteItem: (state, action) => {
-      state.products = state.products.filter(
-        (item) => item._id !== action.payload
-      );
-      // Dispatch a success toast
-      toast.error("Product removed from cart");
-    },
-    resetCart: (state) => {
-      state.products = [];
-      // Dispatch a success toast
-    },
+export default PaymentScreen;

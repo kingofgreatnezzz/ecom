@@ -26,7 +26,6 @@ class Products(models.Model):
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    payment_method = models.CharField(max_length=100, null=False, blank=False)
     tax_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     shipping_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)

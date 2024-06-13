@@ -24,7 +24,6 @@ from rest_framework import status
 
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
-from django.urls import reverse
 from .utils import account_activation_token
 from rest_framework.decorators import api_view
 from .models import *
@@ -34,6 +33,8 @@ import threading
 from .serializers import OrderSerializer
 import string
 import random
+
+
 
 def generate_unique_order_id():
     characters = string.ascii_uppercase + string.digits
@@ -49,42 +50,48 @@ def addOrderItems(request):
     user = request.user
     data = request.data
 
-    orderItems = data['orderItems']
+    orderItems = data.get('orderItems')
 
-    if orderItems and len(orderItems) == 0:
+    if not orderItems or len(orderItems) == 0:
         return Response({'detail': 'No Order Items'}, status=status.HTTP_400_BAD_REQUEST)
-    else:
-        order_id = generate_unique_order_id()
 
-        order = Order.objects.create(
-            user=user,
-            payment_method=data['paymentMethod'],
-            tax_price=data['taxPrice'],
-            shipping_price=data['shippingPrice'],
-            total_price=data['totalPrice'],
-            order_id=order_id
-        )
+    order_id = generate_unique_order_id()
+    order = Order.objects.create(
+        user=user,
+        order_id=order_id,
+        tax_price=data.get('tax_price', 0),
+        shipping_price=data.get('shipping_price', 0),
+        total_price=data.get('total_price', 0),
+        is_paid=True,
+        paid_at=data.get('paid_at')
+    )
 
-        shipping = ShippingAddress.objects.create(
+    shipping = ShippingAddress.objects.create(
+        order=order,
+        address=data['shippingAddress']['address'],
+        city=data['shippingAddress']['city'],
+        postal_code=data['shippingAddress']['postalCode'],
+        country=data['shippingAddress']['country']
+    )
+
+    for item in orderItems:
+        OrderItem.objects.create(
+            product_id=item['product'],
             order=order,
-            address=data['shippingAddress']['address'],
-            city=data['shippingAddress']['city'],
-            postal_code=data['shippingAddress']['postalCode'],
-            country=data['shippingAddress']['country']
+            name=item['name'],
+            qty=item['qty'],
+            price=item['price'],
+            image=item['image']
         )
 
-        for i in orderItems:
-            OrderItem.objects.create(
-                product_id=i['product'],
-                order=order,
-                name=i['name'],
-                qty=i['qty'],
-                price=i['price'],
-                image=i['image']
-            )
+    serializer = OrderSerializer(order, many=False)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        serializer = OrderSerializer(order, many=False)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+
+
+
 class EmailThread(threading.Thread):
     def __init__(self, email_message):
         self.email_message = email_message

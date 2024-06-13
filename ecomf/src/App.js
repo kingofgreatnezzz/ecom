@@ -11,6 +11,7 @@ import PaymentScreen from './components/screens/PaymentScreen';
 import PrivateRoute from './utils/PrivateRoute';
 import PlaceOrderScreen from './components/screens/PlaceorderScreen';
 import OrderConfirmationScreen from './components/screens/OrderConfirmationScreen';
+import Navbarr from './components/Navbarr';
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path="/product/:id" element={<ProductScreen />} />
           <Route path="/signup" element={<Signupscreen />} />
           <Route path="/cart/:id?" element={<Cartscreen />} />
+          <Route path='/navbarr' element={<Navbarr/>}/>
 
           <Route element={<PrivateRoute />}>
             <Route path="/shipping" element={<ShippingScreen />} />

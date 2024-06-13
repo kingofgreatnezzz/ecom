@@ -4,7 +4,7 @@ from .models import Products, OrderItem, Order, ShippingAddress
 admin.site.register(Products)
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('order_id', 'user', 'payment_method', 'total_price', 'is_paid', 'created_at')
+    list_display = ('order_id', 'user', 'total_price', 'is_paid', 'created_at')
     search_fields = ('order_id',)
 
 admin.site.register(Order, OrderAdmin)
