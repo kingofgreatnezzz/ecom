@@ -1,16 +1,6 @@
 
 
 
-
-
-import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useDispatch } from 'react-redux';
-import PaystackPop from '@paystack/inline-js';
-import { createOrder } from '.'
-
-
-
 const PaymentScreen = () => {
   const publicKey = "pk_test_1bf94b73a334154859e1d426fba4b566245ef5bb";
   const location = useLocation();
