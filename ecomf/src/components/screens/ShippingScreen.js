@@ -20,7 +20,7 @@ const ShippingScreen = () => {
         e.preventDefault();
         dispatch(saveShippingAddress({ address, city, postalCode, country }));
         const totalAmount = location.state.totalAmount;
-        navigate('/payment', { state: { totalAmount } });
+        navigate('/payment', { state: { totalAmount }});
     };
 
     return (

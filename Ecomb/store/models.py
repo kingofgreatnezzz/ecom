@@ -57,7 +57,9 @@ class ShippingAddress(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     address = models.CharField(max_length=200, null=False, blank=False)
     city = models.CharField(max_length=100, null=False, blank=False)
-    postal_code = models.CharField(max_length=20, null=False, blank=False)
+    email = models.EmailField(max_length=254,null=False, blank=False, default='example@example.com')
+    phone = models.IntegerField(null=False, blank=False, default=0)
+    postal_code = models.CharField(max_length=20, null=True, blank=True)
     country = models.CharField(max_length=100, null=False, blank=False)
 
     def __str__(self):

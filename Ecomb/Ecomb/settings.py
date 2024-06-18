@@ -1,6 +1,7 @@
 from datetime import timedelta
 from pathlib import Path
 import django
+import os
 import django.utils
 from django.utils.encoding import force_str
 import django.utils.encoding
@@ -36,7 +37,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'store',
-    'account',
+    'dispatch',
+
 ]
 
 MIDDLEWARE = [
@@ -58,10 +60,13 @@ CORS_ALLOWED_ORIGINS = [
     # Add more origins as needed
 ]
 
+# settings.py
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ["templates"],
+        'DIRS': ['templates'],  # Ensure this matches your project structure
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Ensure this matches your project structure
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -133,11 +138,17 @@ REST_FRAMEWORK = {
 STATIC_URL = '/static/'
 MEDIA_ROOT = 'static/images/'
 MEDIA_URL = '/images/'
+# Add this line to your settings.py
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Make sure you have this setting as well
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Email config
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
+ADMIN_EMAIL = 'chidisolomon80@gmail.com'
 EMAIL_PORT = 465
 EMAIL_USE_TLS = False
 EMAIL_HOST_USER = 'kingofgreatnezzz@gmail.com'
@@ -145,6 +156,10 @@ EMAIL_HOST_PASSWORD = 'dztarzkiddvtlcxj'
 ACCOUNT_EMAIL_VERIFICATION = True
 EMAIL_USE_SSL = True
 
+
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = 'dispatchriders'
+LOGOUT_REDIRECT_URL = 'login'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -155,7 +170,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=3),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": False,

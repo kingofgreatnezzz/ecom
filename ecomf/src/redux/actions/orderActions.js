@@ -33,12 +33,18 @@ export const createOrder = (order) => async (dispatch, getState) => {
     } = getState();
     localStorage.setItem('orders', JSON.stringify(createdOrder));
 
+    return { success: true, data: createdOrder }; // Return success response
+
   } catch (error) {
+    const errorMessage = error.response && error.response.data.detail
+      ? error.response.data.detail
+      : error.message;
+    
     dispatch({
       type: ORDER_CREATE_FAIL,
-      payload: error.response && error.response.data.detail
-        ? error.response.data.detail
-        : error.message,
+      payload: errorMessage,
     });
+
+    return { success: false, error: errorMessage }; // Return failure response
   }
 };

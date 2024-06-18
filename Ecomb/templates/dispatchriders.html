@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dispatch Riders Panel</title>
+</head>
+<body>
+    <h1>Dispatch Riders Panel</h1>
+    <p>Welcome, {user}!</p>
+    <p>Here are your available orders:</p>
+    <p><strong> Note</strong>
+        Oders here are either Ongoing and Not Delivered</p>
+
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+    <ul>
+        {% for order in undelivered_orders %}
+            <li>
+                Order ID: {{ order.order_id }} - Delivered: {{ order.is_delivered }}
+                {% if order.deliverystatus %}
+                    - Rider: {{ order.deliverystatus.rider.user.username }}
+                    <form method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                        <input type="checkbox" name="action" value="ongoing" 
+                            {% if order.deliverystatus.rider.user == request.user %} checked {% endif %} 
+                            onchange="this.form.submit()"> Ongoing
+                        <input type="checkbox" name="action" value="delivered" 
+                            {% if order.deliverystatus.is_delivered %} checked {% endif %} 
+                            onchange="this.form.submit()"> Delivered
+                    </form>
+                {% else %}
+                    <form method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                        <input type="checkbox" name="action" value="ongoing" onchange="this.form.submit()"> Ongoing
+                    </form>
+                {% endif %}
+            </li>
+        {% empty %}
+            <li>No orders found.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dispatch Riders Panel</title>
+</head>
+<body>
+    <h1>Dispatch Riders Panel</h1>
+    <ul>
+        {% for delivery_status in delivery_statuses %}
+            <li>{{ delivery_status.order.order_id }} - {{ delivery_status.is_delivered }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

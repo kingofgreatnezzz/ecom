@@ -5,15 +5,17 @@ import { useSelector, useDispatch } from "react-redux";
 import { createOrder } from "../../redux/actions/orderActions";
 
 const PaymentScreen = () => {
-  const publicKey = "pk_test_1bf94b73a334154859e1d426fba4b566245ef5bb";
-
+  const publicKey = process.env.REACT_APP_KEY
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const totalAmount = location.state ? location.state.totalAmount : null;
+  const totalAmount = location.state ? location.state.totalAmount : 0;
+  const order = location.state && location.state.order; 
+
+
   const [email, setEmail] = useState("");
-  const [amount, setAmount] = useState(totalAmount || 0);
+  const [amount, setAmount] = useState(totalAmount);
 
   const cart = useSelector((state) => state.cart);
   const { cartItems, shippingAddress } = cart;
@@ -25,7 +27,7 @@ const PaymentScreen = () => {
       key: publicKey,
       email: email,
       amount: amount * 100,
-      ref: '' + Math.floor((Math.random() * 1000000000) + 1),
+      ref: '' + Math.floor((Math.random() * 100000) + 1),
       onClose: function() {
         alert('Window closed.');
       },
@@ -33,6 +35,7 @@ const PaymentScreen = () => {
         let message = 'Payment complete! Reference: ' + response.reference;
         alert(message);
         const order = { order_id: response.reference, totalAmount: amount };
+        
         dispatch(createOrder({
           orderItems: cartItems,
           shippingAddress,
@@ -40,8 +43,14 @@ const PaymentScreen = () => {
           tax_price: 0,
           shipping_price: 0,
           paid_at: new Date().toISOString()
-        }));
-        navigate('/order-confirmation', { state: { order } });
+        }))
+        .then(result => {
+          if (result.success) {
+            navigate('/order-confirmation', { state: { order } });
+          } else {
+            alert('Order creation failed: ' + result.error);
+          }
+        });
       }
     });
 
