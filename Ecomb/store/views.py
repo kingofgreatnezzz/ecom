@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from dispatch.models import DeliveryStatus
 
-from .models import Products
+from .models import Products, Notification
 
 
 from .serializers import ProductSerializers, UserSerializers, UserSerializerWithToken
@@ -35,6 +35,51 @@ import threading
 from .serializers import OrderSerializer
 import string
 import random
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+from .models import Notification
+from .serializers import NotificationSerializer
+
+class NotificationListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        notifications = Notification.objects.filter(user=user).order_by('-created_at')
+        serializer = NotificationSerializer(notifications, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class MarkNotificationRead(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, id):
+        try:
+            notification = Notification.objects.get(id=id, user=request.user)
+            notification.is_read = True
+            notification.save()
+            return Response({'detail': 'Notification marked as read'}, status=status.HTTP_200_OK)
+        except Notification.DoesNotExist:
+            return Response({'detail': 'Notification not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_special_offer(request):
+    user = request.user
+    data = request.data
+
+    Notification.objects.create(
+        user=user,
+        message=data['message'],
+        notification_type='special_offer'
+    )
+
+    return Response({'detail': 'Special offer notification created'}, status=status.HTTP_201_CREATED)
 
 
 
@@ -68,13 +113,22 @@ def addOrderItems(request):
         is_paid=True,
         paid_at=data.get('paid_at')
     )
+    
+    Notification.objects.create(
+        user=user,
+        message=f'Your order #{order_id} has been placed successfully.',
+        notification_type='order_confirmation'
+    )
 
     shipping = ShippingAddress.objects.create(
         order=order,
+        user=user,
         address=data['shippingAddress']['address'],
         city=data['shippingAddress']['city'],
         postal_code=data['shippingAddress']['postalCode'],
-        country=data['shippingAddress']['country']
+        country=data['shippingAddress']['country'],
+        email=data['shippingAddress']['email'],
+        phone=data['shippingAddress']['phone'],
     )
 
     for item in orderItems:
@@ -92,7 +146,6 @@ def addOrderItems(request):
 
     serializer = OrderSerializer(order, many=False)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
-
 
 
 

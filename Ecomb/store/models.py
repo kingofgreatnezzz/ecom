@@ -1,10 +1,26 @@
 from django.db import models
-
 import string
 import random
-
 from django.contrib.auth.models import User
 # Create your models here.
+from django.contrib.auth.models import User
+from django.db import models
+
+class Notification(models.Model):
+    NOTIFICATION_TYPES = [
+        ('order_confirmation', 'Order Confirmation'),
+        ('shipping_update', 'Shipping Update'),
+        ('special_offer', 'Special Offer'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    notification_type = models.CharField(choices=NOTIFICATION_TYPES, max_length=20)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.message
 
 
 class Products(models.Model):
@@ -22,8 +38,6 @@ class Products(models.Model):
     def __str__(self):
         return self.product_name
      
-
-
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     tax_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
@@ -66,8 +80,6 @@ class ShippingAddress(models.Model):
     def __str__(self):
         return self.address
 
-
-
 class OrderItem(models.Model):
     product = models.ForeignKey('Products', on_delete=models.SET_NULL, null=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -78,3 +90,4 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return self.name
+

@@ -12,6 +12,8 @@ import PrivateRoute from './utils/PrivateRoute';
 import PlaceOrderScreen from './components/screens/PlaceorderScreen';
 import OrderConfirmationScreen from './components/screens/OrderConfirmationScreen';
 import Navbarr from './components/Navbarr';
+import Notifications from './components/screens/Notifications';
+
 
 
 function App() {
@@ -32,6 +34,7 @@ function App() {
             <Route path="/payment" element={<PaymentScreen />} />
             <Route path="/placeorder" element={<PlaceOrderScreen/>} />
             <Route path="/order-confirmation" element={<OrderConfirmationScreen />} />
+            <Route path='/notifications' element={<Notifications/>}/>
           </Route>
         </Routes>
       </Router>

@@ -1,20 +1,19 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import PaystackPop from '@paystack/inline-js';
+import PaystackPop from "@paystack/inline-js";
 import { useSelector, useDispatch } from "react-redux";
 import { createOrder } from "../../redux/actions/orderActions";
 
 const PaymentScreen = () => {
-  const publicKey = process.env.REACT_APP_KEY
+  const publicKey = process.env.REACT_APP_KEY;
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const totalAmount = location.state ? location.state.totalAmount : 0;
+  const cont_email = location.state ? location.state.email : null;
 
-
-
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(cont_email);
   const [amount, setAmount] = useState(totalAmount);
 
   const cart = useSelector((state) => state.cart);
@@ -27,32 +26,33 @@ const PaymentScreen = () => {
       key: publicKey,
       email: email,
       amount: amount * 100,
-      ref: '' + Math.floor((Math.random() * 100000) + 1),
-      onClose: function() {
-        alert('Window closed.');
+      ref: "" + Math.floor(Math.random() * 10000000 + 1),
+      onClose: function () {
+        alert("Window closed.");
       },
-      callback: function(response) {
-        let message = 'Payment complete! Reference: ' + response.reference;
+      callback: function (response) {
+        let message = "Payment complete! Reference: " + response.reference;
         alert(message);
         const order = { order_id: response.reference, totalAmount: amount };
-        
-        dispatch(createOrder({
-          orderItems: cartItems,
-          shippingAddress,
-          total_price: amount,
-          tax_price: 0,
-          shipping_price: 0,
-          ref_no: response.reference,
-          paid_at: new Date().toISOString()
-        }))
-        .then(result => {
+
+        dispatch(
+          createOrder({
+            orderItems: cartItems,
+            shippingAddress,
+            total_price: amount,
+            tax_price: 0,
+            shipping_price: 0,
+            ref_no: response.reference,
+            paid_at: new Date().toISOString(),
+          })
+        ).then((result) => {
           if (result.success) {
-            navigate('/order-confirmation', { state: { order } });
+            navigate("/order-confirmation", { state: { order } });
           } else {
-            alert('Order creation failed: ' + result.error);
+            alert("Order creation failed: " + result.error);
           }
         });
-      }
+      },
     });
 
     handler.openIframe();
@@ -83,7 +83,10 @@ const PaymentScreen = () => {
             readOnly
           />
         </div>
-        <button type="submit" className="bg-blue-600 p-4 rounded-md text-gray-300">
+        <button
+          type="submit"
+          className="bg-blue-600 p-4 rounded-md text-gray-300"
+        >
           Pay with Paystack
         </button>
       </form>

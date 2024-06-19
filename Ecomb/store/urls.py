@@ -19,6 +19,12 @@ urlpatterns = [
     path('users/getUsers/', views.getUsers, name="getUsers"),
     path('users/register/', views.register, name='register'),
     path('activate/<str:uidb64>/<str:token>/', views.ActivateView.as_view(), name='activate'),
+
+
     path('orders/add/', views.addOrderItems, name='orders-add'),
+    path('notifications/', views.NotificationListView.as_view(), name='notifications'),
+    path('notifications/<int:id>/', views.MarkNotificationRead.as_view(), name='mark_notification_read'),
+
+
 
 ]

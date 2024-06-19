@@ -18,9 +18,6 @@ class DeliveryStatusAdmin(admin.ModelAdmin):
     search_fields = ('order__order_id', 'rider__user__username')  # Example fields to search by
     readonly_fields = ('order', 'is_delivered', 'delivered_at')  # Fields that shouldn't be edited by riders
 
-    def has_add_permission(self, request):
-        return False  # Riders should not add new delivery statuses directly
-
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         if not request.user.is_superuser:  # Restrict view to relevant data for non-superusers

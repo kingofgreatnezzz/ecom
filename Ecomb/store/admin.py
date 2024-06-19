@@ -10,7 +10,6 @@ class OrderItemInline(admin.TabularInline):
 
     # Optionally, you can make fields read-only
     readonly_fields = ('name', 'qty', 'price', 'image')
-
     # Disable editing existing items (just view)
     can_delete = False
 
@@ -31,8 +30,8 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(ShippingAddress)
 class ShippingAddressAdmin(admin.ModelAdmin):
-    list_display = ('order', 'user', 'address', 'city', 'email', 'phone', 'postal_code', 'country')
-    search_fields = ('email', 'city', 'phone')
+    list_display = ('order', 'user', 'address', 'city', 'email', 'phone')
+    search_fields = ('email', 'city', 'order', 'phone')
 
     def user(self, obj):
         return obj.user.username if obj.user else None
