@@ -11,7 +11,7 @@ const PaymentScreen = () => {
   const dispatch = useDispatch();
 
   const totalAmount = location.state ? location.state.totalAmount : 0;
-  const order = location.state && location.state.order; 
+
 
 
   const [email, setEmail] = useState("");
@@ -42,6 +42,7 @@ const PaymentScreen = () => {
           total_price: amount,
           tax_price: 0,
           shipping_price: 0,
+          ref_no: response.reference,
           paid_at: new Date().toISOString()
         }))
         .then(result => {

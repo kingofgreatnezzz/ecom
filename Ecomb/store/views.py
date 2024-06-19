@@ -4,6 +4,8 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view,  permission_classes
 from rest_framework.response import Response
 
+from dispatch.models import DeliveryStatus
+
 from .models import Products
 
 
@@ -62,6 +64,7 @@ def addOrderItems(request):
         tax_price=data.get('tax_price', 0),
         shipping_price=data.get('shipping_price', 0),
         total_price=data.get('total_price', 0),
+        ref_no = data.get('ref_no', 0),
         is_paid=True,
         paid_at=data.get('paid_at')
     )
@@ -83,6 +86,9 @@ def addOrderItems(request):
             price=item['price'],
             image=item['image']
         )
+    
+      # Create DeliveryStatus entry
+    DeliveryStatus.objects.create(order=order)
 
     serializer = OrderSerializer(order, many=False)
     return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -29,6 +29,7 @@ class Order(models.Model):
     tax_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     shipping_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    ref_no = models.IntegerField(null=False, blank=True, default="0" )
     is_paid = models.BooleanField(default=False)
     paid_at = models.DateTimeField(auto_now_add=False, null=True, blank=True)
     is_delivered = models.BooleanField(default=False)

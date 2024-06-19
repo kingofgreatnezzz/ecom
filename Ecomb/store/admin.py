@@ -21,7 +21,7 @@ class OrderItemInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('order_id', 'user', 'total_price', 'is_paid', 'created_at')
+    list_display = ('order_id', 'user', 'total_price', 'is_paid','ref_no', 'created_at')
     search_fields = ('order_id', 'user__username')  # Search by user's username
 
     # Define inline models
