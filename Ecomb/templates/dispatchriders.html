@@ -6,10 +6,9 @@
 </head>
 <body>
     <h1>Dispatch Riders Panel</h1>
-    <p>Welcome, {user}!</p>
+    <p>Welcome, {{ request.user.username }}!</p>
     <p>Here are your available orders:</p>
-    <p><strong> Note</strong>
-        Oders here are either Ongoing and Not Delivered</p>
+    <p><strong> Note:</strong> Orders here are either Ongoing and Not Delivered</p>
 
     <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}
@@ -18,9 +17,12 @@
     <ul>
         {% for order in undelivered_orders %}
             <li>
-                Order ID: {{ order.order_id }} - Delivered: {{ order.is_delivered }}
+                <strong>Order ID:</strong> {{ order.order_id }} - <strong>Delivered:</strong> {{ order.is_delivered }}
+                <br>
+                <strong>City:</strong> {{ order.shippingAddress.city }} - <strong>Phone:</strong> {{ order.shippingAddress.phone }} - <strong>Address:</strong> {{ order.shippingAddress.address }}
                 {% if order.deliverystatus %}
-                    - Rider: {{ order.deliverystatus.rider.user.username }}
+                    <br>
+                    <strong>Rider:</strong> {{ order.deliverystatus.rider.user.username }}
                     <form method="post" style="display:inline;">
                         {% csrf_token %}
                         <input type="hidden" name="order_id" value="{{ order.order_id }}">

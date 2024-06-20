@@ -44,6 +44,26 @@ from rest_framework import status
 from .models import Notification
 from .serializers import NotificationSerializer
 
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.db.models import Q
+from .models import Products
+from .serializers import ProductSerializers
+
+@api_view(['GET'])
+def search_products(request):
+    query = request.query_params.get('q', '')
+    if query:
+        products = Products.objects.filter(
+            Q(product_name__icontains=query) | 
+            Q(product_info__icontains=query) |
+            Q(product_category__icontains=query)
+        )
+        serializer = ProductSerializers(products, many=True)
+        return Response(serializer.data)
+    return Response([])
+
 class NotificationListView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -66,7 +86,6 @@ class MarkNotificationRead(APIView):
             return Response({'detail': 'Notification not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_special_offer(request):
@@ -80,7 +99,6 @@ def create_special_offer(request):
     )
 
     return Response({'detail': 'Special offer notification created'}, status=status.HTTP_201_CREATED)
-
 
 
 def generate_unique_order_id():
@@ -148,9 +166,6 @@ def addOrderItems(request):
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-
-
-
 class EmailThread(threading.Thread):
     def __init__(self, email_message):
         self.email_message = email_message
@@ -199,7 +214,6 @@ def register(request):
         response = {"details": "Username with this email already exists or something went wrong."}
         #return Response(response, status=status.HTTP_400_BAD_REQUEST)
         return Response(response)
-
 
 
 class ActivateView(APIView):

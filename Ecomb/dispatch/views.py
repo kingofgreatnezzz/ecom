@@ -1,6 +1,5 @@
 from datetime import datetime
 from django.shortcuts import render, redirect
-from django.utils import timezone
 from .models import DeliveryStatus, DispatchRider
 from store.models import Order
 from django.contrib.auth.decorators import login_required
@@ -20,12 +19,12 @@ def signup_view(request):
         form = UserCreationForm()
     return render(request, 'registration/signup.html', {'form': form})
 
+
 @login_required
 def dispatch_rider_view(request):
     try:
         dispatch_rider = request.user.dispatchrider
     except DispatchRider.DoesNotExist:
-        # If the user does not have a DispatchRider instance, redirect to signup
         return redirect('signup')
 
     if request.method == 'POST':
@@ -34,7 +33,6 @@ def dispatch_rider_view(request):
         try:
             order = Order.objects.get(order_id=order_id)
         except Order.DoesNotExist:
-            # Handle case where the order does not exist
             return redirect('dispatchriders')
 
         if action == 'ongoing':
@@ -54,12 +52,11 @@ def dispatch_rider_view(request):
                 order.delivered_at = datetime.now()
                 order.save()
             except DeliveryStatus.DoesNotExist:
-                # Handle case where the delivery status does not exist for this order and rider
                 pass
 
         return redirect('dispatchriders')
 
-    undelivered_orders = Order.objects.filter(is_delivered=False).select_related('deliverystatus__rider')
+    undelivered_orders = Order.objects.filter(is_delivered=False).select_related('shippingAddress', 'deliverystatus__rider')
     context = {
         'undelivered_orders': undelivered_orders
     }

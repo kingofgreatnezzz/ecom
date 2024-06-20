@@ -22,6 +22,9 @@ urlpatterns = [
 
 
     path('orders/add/', views.addOrderItems, name='orders-add'),
+
+    path('products/search/', views.search_products, name='search-products'),
+
     path('notifications/', views.NotificationListView.as_view(), name='notifications'),
     path('notifications/<int:id>/', views.MarkNotificationRead.as_view(), name='mark_notification_read'),
 

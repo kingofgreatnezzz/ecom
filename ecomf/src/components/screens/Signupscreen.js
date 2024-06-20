@@ -24,20 +24,23 @@ function Signupscreen() {
 
   useEffect(() => {
     if (userInfo) {
-      setMessage(userInfo.details);
-      setUsername("");
+      setMessage(userInfo.details); // Display success message
+      setUsername(""); // Reset form fields
       setEmail("");
       setPassword("");
       setPassword1("");
     }
     if (error) {
-      setMessage(error);
+      setMessage(error); // Display error message
     }
   }, [userInfo, error, redirect, navigate]);
 
   const submitHandler = (e) => {
     e.preventDefault();
-    
+
+    // Reset message state on form submission
+    setMessage("");
+
     if (password !== password1) {
       setMessage("Passwords do not match");
     } else if (!validPassword.test(password)) {
@@ -52,17 +55,13 @@ function Signupscreen() {
       <div className="w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
         <div className="px-6 py-4">
           <h3 className="mt-3 text-xl font-medium text-center text-gray-600 dark:text-gray-200">
-            Welcome Back
+            Create Account
           </h3>
 
-          <p className="mt-1 text-center text-gray-500 dark:text-gray-400">
-            Login or create account
-          </p>
-
           <div className="pt-4">
-          {message && <Message color={"red"}>{message}</Message>}
-          {loading && <Loader />}
-        </div>
+            {message && <Message color="red">{message}</Message>}
+            {loading && <Loader />}
+          </div>
 
           <form onSubmit={submitHandler}>
             <div className="w-full mt-4">
@@ -106,8 +105,8 @@ function Signupscreen() {
               <input
                 className="block w-full px-4 py-2 mt-2 text-gray-300 placeholder-gray-500 bg-white border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-blue-300"
                 type="password"
-                onChange={(e) => setPassword1(e.target.value)}
                 value={password1}
+                onChange={(e) => setPassword1(e.target.value)}
                 placeholder="Confirm Password"
                 aria-label="Confirm Password"
                 required
@@ -115,7 +114,10 @@ function Signupscreen() {
             </div>
 
             <div className="flex items-center justify-between mt-4">
-              <button className="w-full py-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50">
+              <button
+                type="submit"
+                className="w-full py-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50"
+              >
                 Sign Up
               </button>
             </div>
@@ -124,7 +126,7 @@ function Signupscreen() {
 
         <div className="flex items-center justify-center py-4 text-center bg-gray-50 dark:bg-gray-700">
           <span className="text-sm text-gray-600 dark:text-gray-200">
-            Have an account?
+            Already have an account?
           </span>
 
           <Link

@@ -4,6 +4,7 @@ import Product from "../Product";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../Loader";
 import Message from "../Message";
+import SearchBar from "../screens/SearchBar";
 
 function Homescreen() {
   const dispatch = useDispatch();
@@ -16,6 +17,9 @@ function Homescreen() {
 
   return (
     <div className="px-3">
+    <div>
+    <SearchBar/>
+    </div>
       <h1 className="font-bold text-3xl p-2 pb-6">My Products</h1>
       <div className="grid">
         {loading ? (
