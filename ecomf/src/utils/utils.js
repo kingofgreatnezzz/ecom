@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export const refreshToken = async (refreshToken) => {
   try {
-    const response = await axios.post('/token/refresh/', { refresh: refreshToken });
+    const response = await axios.post('/api/token/refresh/', { refresh: refreshToken });
     return response.data;
   } catch (error) {
     console.error('Error refreshing token:', error);
@@ -10,3 +10,5 @@ export const refreshToken = async (refreshToken) => {
     throw error;
   }
 };
+
+export const admin_email = "chidisolomon80@gmail.com"

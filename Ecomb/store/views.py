@@ -64,8 +64,9 @@ def search_products(request):
         return Response(serializer.data)
     return Response([])
 
+
+@permission_classes([IsAuthenticated])
 class NotificationListView(APIView):
-    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user

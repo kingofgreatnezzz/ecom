@@ -3,6 +3,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import PaystackPop from "@paystack/inline-js";
 import { useSelector, useDispatch } from "react-redux";
 import { createOrder } from "../../redux/actions/orderActions";
+import { admin_email } from "../../utils/utils";
+
+
 
 const PaymentScreen = () => {
   const publicKey = process.env.REACT_APP_KEY;
@@ -11,9 +14,7 @@ const PaymentScreen = () => {
   const dispatch = useDispatch();
 
   const totalAmount = location.state ? location.state.totalAmount : 0;
-  const cont_email = location.state ? location.state.email : null;
 
-  const [email, setEmail] = useState(cont_email);
   const [amount, setAmount] = useState(totalAmount);
 
   const cart = useSelector((state) => state.cart);
@@ -24,7 +25,7 @@ const PaymentScreen = () => {
 
     let handler = PaystackPop.setup({
       key: publicKey,
-      email: email,
+      email: admin_email,
       amount: amount * 100,
       ref: "" + Math.floor(Math.random() * 10000000 + 1),
       onClose: function () {
@@ -62,16 +63,6 @@ const PaymentScreen = () => {
     <div>
       <h2>Paystack Payment</h2>
       <form id="paymentForm" onSubmit={payWithPaystack}>
-        <div>
-          <label htmlFor="email-address">Email Address</label>
-          <input
-            type="email"
-            id="email-address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
         <div>
           <label htmlFor="amount">Amount</label>
           <input

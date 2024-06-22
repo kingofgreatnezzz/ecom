@@ -35,12 +35,6 @@ export const signup = (username, email, password) => async (dispatch) => {
       type: USER_SIGNUP_SUCCESS,
       payload: data,
     });
-
-    // localStorage.setItem("userInfo", JSON.stringify(data));
-    // localStorage.setItem(
-    //   "Activate Mgs",
-    //   "Activate ur account by clicking on the link in your E-mail"
-    // );
   } catch (error) {
     dispatch({
       type: USER_SIGNUP_FAIL,
