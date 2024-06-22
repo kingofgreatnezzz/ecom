@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Logoutscreen from "./screens/Logoutscreen";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/actions/userActions";
-import { IoMdNotifications } from "react-icons/io";
+import NotificationIcon from "./screens/NotificationIcon";
 
 function Navbar() {
   const userLogin = useSelector((state) => state.userLogin);
@@ -67,7 +67,7 @@ function Navbar() {
             )}
           </Link>
           <Link to={"/notifications"}>
-            <IoMdNotifications className="h-6 w-6" />
+           <NotificationIcon/>
           </Link>
         </div>
       </div>
