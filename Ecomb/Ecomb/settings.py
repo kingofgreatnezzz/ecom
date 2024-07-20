@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-sh(n-9dxmf52zl6lpqts(mz^bkajl+5%bkc=(jgdihm4*_ck#z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["https://ecommerce-ten-cyan.vercel.app/", "*"]
 
 
 # Application definition
