@@ -1,7 +1,5 @@
-from .models import Order
-# Register your models here.
 from django.contrib import admin
-from .models import DispatchRider, DeliveryStatus
+from .models import DispatchRider, DeliveryStatus, Order
 
 class DeliveryStatusInline(admin.TabularInline):
     model = DeliveryStatus

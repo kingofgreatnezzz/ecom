@@ -1,30 +1,14 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-
-from rest_framework import serializers
 from .models import Order, OrderItem, ShippingAddress
-
-from .models import Products
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework import serializers
-
-
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.tokens import RefreshToken
-
-
-from rest_framework import serializers
 from .models import Notification
 
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = ['id', 'user', 'message', 'notification_type', 'created_at', 'is_read']
-
-
-
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -57,11 +41,6 @@ class UserSerializerWithToken(serializers.ModelSerializer):
     def get_token(self, obj):
         token = RefreshToken.for_user(obj)
         return str(token.access_token)
-
-class ProductSerializers(serializers.ModelSerializer):
-    class Meta:
-        model = Products
-        fields = '__all__'
 
 
 

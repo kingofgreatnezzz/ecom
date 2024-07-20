@@ -2,27 +2,19 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 from django.shortcuts import render
 from rest_framework.decorators import api_view,  permission_classes
-from rest_framework.response import Response
-
-from dispatch.models import DeliveryStatus
-
-from .models import Products, Notification
 
 
-from .serializers import ProductSerializers, UserSerializers, UserSerializerWithToken
+
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from rest_framework import status
 
-from .serializers import MyTokenObtainPairSerializer
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 # users/views.py
 from django.contrib.auth.models import User
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from django.template.loader import render_to_string
-from django.core.mail import send_mail
-from rest_framework import status
+
 
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
@@ -42,14 +34,13 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from .models import Notification
-from .serializers import NotificationSerializer
+from .serializers import *
 
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.db.models import Q
-from .models import Products
-from .serializers import ProductSerializers
+
 
 @api_view(['GET'])
 def search_products(request):
