@@ -1,7 +1,19 @@
 const { fontFamily } = require("tailwindcss/defaultTheme");
 
 /** @type {import('tailwindcss').Config} */
+
+
+const path = require('path');
+
+
 module.exports = {
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src/')
+    },
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.json']
+  },
+  
   darkMode: ["class"],
   content: ["./src/**/*.{js,jsx}", "./src/components/**/*.{js,jsx}"],
   theme: {
@@ -12,6 +24,7 @@ module.exports = {
         "2xl": "1400px",
       },
     },
+
     extend: {
       colors: {
         border: "hsl(var(--border))",

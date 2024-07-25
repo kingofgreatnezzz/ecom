@@ -17,9 +17,9 @@ function Homescreen() {
 
   return (
     <div className="px-3">
-    <div>
-    <SearchBar/>
-    </div>
+      <div>
+        <SearchBar />
+      </div>
       <h1 className="font-bold text-3xl p-2 pb-6">My Products</h1>
       <div className="grid">
         {loading ? (
